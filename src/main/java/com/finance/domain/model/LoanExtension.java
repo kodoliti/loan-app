@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@DomainAggregateRoot
 public class LoanExtension {
 
     @Id
