@@ -2,13 +2,13 @@ package com.finance.domain.model;
 
 import com.finance.domain.annotation.DomainAggregateRoot;
 import com.finance.domain.policy.LoanExtensionPolicy;
+import org.joda.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-import org.joda.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -30,9 +30,10 @@ public class LoanExtension {
     @Transient
     private LoanExtensionPolicy loanExtensionPolicy;
 
-    public LoanExtension() {}
+    public LoanExtension() {
+    }
 
-    public LoanExtension(Date oldRepaymentDate,BigDecimal oldLoanAmount, LoanExtensionPolicy loanExtensionPolicy) {
+    public LoanExtension(Date oldRepaymentDate, BigDecimal oldLoanAmount, LoanExtensionPolicy loanExtensionPolicy) {
         this.oldRepaymentDate = oldRepaymentDate;
         this.oldLoanAmount = oldLoanAmount;
         this.loanExtensionPolicy = loanExtensionPolicy;

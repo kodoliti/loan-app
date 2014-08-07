@@ -1,10 +1,10 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE")
-    }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE")
+  }
 }
 
 
@@ -15,53 +15,53 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-    baseName = 'loan-app'
-    version =  '0.1.0'
+  baseName = 'loan-app'
+  version = '0.1.0'
 }
 
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.2.0'
+  compile 'org.codehaus.groovy:groovy-all:2.2.0'
 
-    compile ('org.springframework.boot:spring-boot-starter-web:1.1.4.RELEASE') {
-        exclude module: "spring-boot-starter-tomcat"
-    }
-    compile 'org.springframework.boot:spring-boot-starter-jetty:1.1.4.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-actuator:1.1.4.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.1.4.RELEASE'
-    compile 'joda-time:joda-time:2.3'
-    compile 'com.h2database:h2'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
-    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
-    compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
+  compile('org.springframework.boot:spring-boot-starter-web:1.1.4.RELEASE') {
+    exclude module: "spring-boot-starter-tomcat"
+  }
+  compile 'org.springframework.boot:spring-boot-starter-jetty:1.1.4.RELEASE'
+  compile 'org.springframework.boot:spring-boot-starter-actuator:1.1.4.RELEASE'
+  compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.1.4.RELEASE'
+  compile 'joda-time:joda-time:2.3'
+  compile 'com.h2database:h2'
+  compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+  compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+  compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
 
-    //tests
-    testCompile 'org.springframework:spring-test:3.2.5.RELEASE'
-    testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
-    testCompile 'junit:junit:4.11'
-    testCompile 'info.cukes:cucumber-java:1.1.6'
-    testCompile 'info.cukes:cucumber-junit:1.1.6'
-    testCompile 'info.cukes:cucumber-spring:1.1.6'
+  //tests
+  testCompile 'org.springframework:spring-test:3.2.5.RELEASE'
+  testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'
+  testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+  testCompile 'junit:junit:4.11'
+  testCompile 'info.cukes:cucumber-java:1.1.6'
+  testCompile 'info.cukes:cucumber-junit:1.1.6'
+  testCompile 'info.cukes:cucumber-spring:1.1.6'
 
-    testRuntime "cglib:cglib-nodep:2.2.2"
-    testRuntime "org.objenesis:objenesis:1.2"
+  testRuntime "cglib:cglib-nodep:2.2.2"
+  testRuntime "org.objenesis:objenesis:1.2"
 }
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+  gradleVersion = '2.0'
 }
 
 
 sourceSets {
-    test {
-        groovy {
-            srcDirs = ['src/test/groovy']
-        }
+  test {
+    groovy {
+      srcDirs = ['src/test/groovy']
     }
+  }
 }

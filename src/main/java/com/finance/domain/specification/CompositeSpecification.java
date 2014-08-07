@@ -9,7 +9,7 @@ public class CompositeSpecification<T> implements Specification<T> {
 
     private List<Specification<T>> specifications;
 
-    public CompositeSpecification (Specification<T>... specifications){
+    public CompositeSpecification(Specification<T>... specifications) {
         this.specifications = Arrays.asList(specifications);
     }
 
@@ -28,7 +28,7 @@ public class CompositeSpecification<T> implements Specification<T> {
     @Override
     public boolean isSatisfiedBy(T candidate) {
         for (Specification<T> spec : specifications) {
-            if (!spec.isSatisfiedBy(candidate)){
+            if (!spec.isSatisfiedBy(candidate)) {
                 this.message = spec.getMessage();
                 return false;
             }
@@ -36,7 +36,7 @@ public class CompositeSpecification<T> implements Specification<T> {
         return true;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return this.message;
     }
 

@@ -1,7 +1,5 @@
 package com.finance.controller.dto;
 
-import com.finance.controller.dto.CustomerDto;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -22,7 +20,7 @@ public class LoanRequestDto implements Serializable {
     @NotNull
     private Date repaymentDate;
 
-    public LoanRequestDto(){
+    public LoanRequestDto() {
     }
 
     public LoanRequestDto(CustomerDto customerDto, BigDecimal totalAmount, Date repaymentDate) {

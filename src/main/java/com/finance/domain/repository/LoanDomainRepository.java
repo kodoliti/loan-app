@@ -4,7 +4,6 @@ import com.finance.domain.annotation.DomainRepository;
 import com.finance.domain.model.Loan;
 import com.finance.domain.policy.LoanExtensionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;

@@ -19,7 +19,8 @@ public class Contact {
 
     private String postcode;
 
-    public Contact(){}
+    public Contact() {
+    }
 
     public Contact(String eMailAddress, String mobilePhoneNumber, String apartmentNumber, String buildingNumber, String street, String city, String postcode) {
         this.eMailAddress = eMailAddress;

@@ -1,13 +1,11 @@
 package com.finance.domain.policy;
 
 import com.finance.domain.annotation.DomainPolicy;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.GregorianCalendar;
-
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.math.BigDecimal;
+import java.util.GregorianCalendar;
 
 @DomainPolicy
 public class WeeklyLoanExtensionPolicy implements LoanExtensionPolicy {

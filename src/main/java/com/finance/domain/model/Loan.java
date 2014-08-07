@@ -2,17 +2,13 @@ package com.finance.domain.model;
 
 import com.finance.domain.annotation.DomainAggregateRoot;
 import com.finance.domain.policy.LoanExtensionPolicy;
-import com.finance.domain.policy.WeeklyLoanExtensionPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @DomainAggregateRoot
@@ -43,7 +39,8 @@ public class Loan extends AuditableDate {
     @Transient
     LoanExtensionPolicy weeklyLoanExtensionPolicy;
 
-    public Loan() {}
+    public Loan() {
+    }
 
     public Loan(Customer customer, BigDecimal totalAmount, Date repaymentDate, String ipAddress, LoanStatus status) {
         this.customer = customer;

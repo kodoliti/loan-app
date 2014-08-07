@@ -1,7 +1,8 @@
 package com.finance.domain.policy;
 
-import java.math.BigDecimal;
 import org.joda.time.LocalDate;
+
+import java.math.BigDecimal;
 
 public interface LoanExtensionPolicy {
 

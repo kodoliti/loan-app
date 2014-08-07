@@ -11,14 +11,11 @@ import com.finance.domain.policy.WeeklyLoanExtensionPolicy
 import com.finance.domain.repository.CustomerRepository
 import com.finance.domain.repository.LoanDomainRepository
 import com.finance.util.CommonTestObject
-import spock.lang.Specification
-
-
-import org.joda.time.LocalDate
 import org.joda.time.DateTime
 import org.joda.time.DateTimeUtils
+import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
-
+import spock.lang.Specification
 
 class LoanApplicationServiceSpec extends Specification {
 
@@ -161,7 +158,7 @@ class LoanApplicationServiceSpec extends Specification {
     then:
     result.status == Loan.LoanStatus.EXTENDED
     result.loanExtensionList.size() == 1
-    result.repaymentDate ==  new LocalDate(repaymentDate).plusWeeks(1).toDate();
+    result.repaymentDate == new LocalDate(repaymentDate).plusWeeks(1).toDate();
     result.totalAmount == 205.75
   }
 

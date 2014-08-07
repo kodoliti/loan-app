@@ -1,8 +1,6 @@
 package com.finance.controller.dto;
 
-import com.finance.controller.dto.LoanExtensionDto;
 import com.finance.domain.model.Loan;
-import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;

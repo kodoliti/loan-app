@@ -3,11 +3,10 @@ package com.finance.domain.specification.risk;
 import com.finance.domain.model.Loan;
 import com.finance.domain.repository.LoanDomainRepository;
 import com.finance.domain.specification.CompositeSpecification;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import java.util.List;
 
+import java.util.List;
 
 
 public class NumberOfApplicationsAllowedSpecification extends CompositeSpecification<Loan> {

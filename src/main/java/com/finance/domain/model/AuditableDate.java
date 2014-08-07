@@ -1,7 +1,10 @@
 package com.finance.domain.model;
 
 
-import javax.persistence.*;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PreUpdate;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 @MappedSuperclass

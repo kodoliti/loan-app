@@ -3,7 +3,6 @@ package com.finance.domain.model;
 import com.finance.domain.annotation.DomainAggregateRoot;
 
 import javax.persistence.*;
-
 import java.util.Date;
 
 @Entity
@@ -26,7 +25,8 @@ public class Customer extends AuditableDate {
     @Embedded
     private Contact contactDetail;
 
-    public Customer() {}
+    public Customer() {
+    }
 
     public Customer(String firstName, String surname, Date dateOfBirth, String identificationNumber, Contact contactDetail) {
         this.firstName = firstName;
