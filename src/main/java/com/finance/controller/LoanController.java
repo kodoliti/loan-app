@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/loan")
-@Transactional
 public class LoanController {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
@@ -41,9 +40,9 @@ public class LoanController {
         this.loanMapper = loanMapper;
     }
 
-    @RequestMapping(value = "/getLoan", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public LoanResponseDto getLoan(@RequestBody @Valid LoanRequestDto loanRequestDto, HttpServletRequest httpRequest) {
+    public LoanResponseDto getLoan(@RequestParam LoanRequestDto loanRequestDto, HttpServletRequest httpRequest) {
         logger.info(loanRequestDto.toString());
         String ipAddress = httpRequest.getRemoteAddr();
         try {
@@ -55,9 +54,9 @@ public class LoanController {
     }
 
 
-    @RequestMapping(value = "/getLoanExtension", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/{loanReference}/extension", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public LoanResponseDto getLoanExtension(@RequestBody @Valid @NotBlank String loanReference) {
+    public LoanResponseDto getLoanExtension(@PathVariable("loanReference") @Valid @NotBlank String loanReference) {
         try {
             Loan loan = loanApplicationService.createLoanExtension(loanReference);
             return new LoanResponseDto(loan.getLoanReference(), "The loan was extended correctly.", true);
@@ -66,7 +65,7 @@ public class LoanController {
         }
     }
 
-    @RequestMapping(value = "/getLoanHistory/{customerId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{customerId}/history", method = RequestMethod.GET)
     @ResponseBody
     public List<LoanDto> getLoanHistory(@PathVariable("customerId") Long customerId) {
         List<Loan> loanList = loanApplicationService.getLoanHistory(customerId);

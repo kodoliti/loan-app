@@ -33,6 +33,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-jetty:1.1.4.RELEASE'
   compile 'org.springframework.boot:spring-boot-starter-actuator:1.1.4.RELEASE'
   compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.1.4.RELEASE'
+  compile 'org.springframework:spring-context:3.2.5.RELEASE'
   compile 'joda-time:joda-time:2.3'
   compile 'com.h2database:h2'
   compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
@@ -43,6 +44,7 @@ dependencies {
   testCompile 'org.springframework:spring-test:3.2.5.RELEASE'
   testCompile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+  testCompile 'org.spockframework:spock-spring:0.7-groovy-2.0'
   testCompile 'junit:junit:4.11'
   testCompile 'info.cukes:cucumber-java:1.1.6'
   testCompile 'info.cukes:cucumber-junit:1.1.6'
