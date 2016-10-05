@@ -8,50 +8,34 @@ import com.finance.domain.repository.CustomerRepository
 import com.finance.domain.repository.LoanRepository
 import com.finance.util.CommonTestObject
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpResponse
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.transaction.TransactionConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
-import javax.transaction.Transactional
-
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = Application.class)
 @WebAppConfiguration
+@EnableAutoConfiguration
 @IntegrationTest("server.port:8080")
-@ActiveProfiles("test")
-@Transactional
-@TransactionConfiguration(defaultRollback = true)
 class LoanControllerFunctionalSpec extends Specification {
 
   @Autowired
   LoanRepository loanRepository
 
   @Autowired
-  JdbcTemplate jdbcTemplate;
-
-
-  @Autowired
   CustomerRepository customerRepository
 
 
   def setup() {
-    //jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE")
-   // jdbcTemplate.execute("TRUNCATE TABLE LOAN")
-  //  jdbcTemplate.execute("TRUNCATE TABLE CUSTOMER")
-    jdbcTemplate.execute("drop table customer")
- //   jdbcTemplate.execute("COMMIT")
-    //loanRepository.deleteAll()
-    //customerRepository.deleteAll()
+    loanRepository.deleteAll()
   }
 
 
@@ -63,31 +47,28 @@ class LoanControllerFunctionalSpec extends Specification {
     LoanRequestDto loanRequest = new LoanRequestDto(customerData, loanAmount, repaymentDate)
 
     when:
-    ResponseEntity<LoanResponseDto> entity = new RestTemplate().postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
+    ResponseEntity<LoanResponseDto> entity = new RestTemplate().postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
 
     then:
-    entity.statusCode == HttpStatus.OK
-    entity.body.loanReference == '0000000001'
+    entity.statusCode == HttpStatus.CREATED
   }
 
   void "should extend twice a loan"() {
-
     given:
     CustomerDto customerData = CommonTestObject.createCustomerData()
     BigDecimal loanAmount = 300
     Date repaymentDate = CommonTestObject.generateDate(15);
     LoanRequestDto loanRequest = new LoanRequestDto(customerData, loanAmount, repaymentDate)
-    String loanReference = '0000000001'
+
 
     when:
     RestTemplate restTemplate = new RestTemplate()
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoanExtension", loanReference, LoanResponseDto.class)
-    ResponseEntity<LoanResponseDto> entity = restTemplate.postForEntity("http://localhost:8080/loan/getLoanExtension", loanReference, LoanResponseDto.class)
+    ResponseEntity<LoanResponseDto> entity1 = restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    ResponseEntity<LoanResponseDto> entity2 = restTemplate.postForEntity("http://localhost:8080/loan/"+entity1.getBody().loanReference+"/extension", null, LoanResponseDto.class)
+    ResponseEntity<LoanResponseDto> entity3 = restTemplate.postForEntity("http://localhost:8080/loan/"+entity2.getBody().loanReference+"/extension", null, LoanResponseDto.class)
 
     then:
-    entity.statusCode == HttpStatus.OK
-    entity.body.loanReference == '0000000001'
+    entity3.statusCode == HttpStatus.CREATED
   }
 
   void "should refuse a loan application: more than 3 application form the same IP"() {
@@ -102,13 +83,13 @@ class LoanControllerFunctionalSpec extends Specification {
     restTemplate.setErrorHandler(errorHandler);
 
     when:
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    ResponseEntity<LoanResponseDto> entity = restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    ResponseEntity<LoanResponseDto> entity = restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
 
     then:
-    entity.statusCode == HttpStatus.OK
+    entity.statusCode == HttpStatus.BAD_REQUEST
     entity.body.loanReference == null
 
   }
@@ -116,25 +97,27 @@ class LoanControllerFunctionalSpec extends Specification {
   void "should return loan history"() {
 
     given:
+    String personalId = "88082103716"
     CustomerDto customerData = CommonTestObject.createCustomerData()
+    customerData.setIdentificationNumber(personalId)
     BigDecimal loanAmount = 300
-    Date repaymentDate = CommonTestObject.generateDate(15);
+    Date repaymentDate = CommonTestObject.generateDate(15)
     LoanRequestDto loanRequest = new LoanRequestDto(customerData, loanAmount, repaymentDate)
 
     RestTemplate restTemplate = new RestTemplate()
 
     when:
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
-    restTemplate.postForEntity("http://localhost:8080/loan/getLoan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
+    restTemplate.postForEntity("http://localhost:8080/loan", loanRequest, LoanResponseDto.class)
 
-    ResponseEntity entity = restTemplate.getForEntity("http://localhost:8080/loan/getLoanHistory/1", List.class)
+    def customer = customerRepository.findByIdentificationNumber(personalId)
+
+    ResponseEntity entity = restTemplate.getForEntity("http://localhost:8080/loan/customer/"+customer.id+"/history", List.class)
 
     then:
     entity.statusCode == HttpStatus.OK
     entity.getBody().size() == 3
-    entity.getBody().get(2).loanReference == '0000000001'
-
   }
 
 
@@ -151,7 +134,6 @@ class LoanControllerFunctionalSpec extends Specification {
     public void handleError(ClientHttpResponse response) throws IOException {
       properties.put("code", response.getStatusCode())
       properties.put("header", response.getHeaders())
-      throw new Exception()
     }
 
     public Map<String, Object> getProperties() {

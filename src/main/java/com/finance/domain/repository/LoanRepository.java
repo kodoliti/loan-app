@@ -1,14 +1,14 @@
 package com.finance.domain.repository;
 
 import com.finance.domain.model.Loan;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
-@Transactional
-public interface LoanRepository extends CrudRepository<Loan, Long> {
+public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     Loan findById(Long id);
 

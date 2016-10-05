@@ -9,7 +9,7 @@ import com.finance.domain.model.Loan
 import com.finance.domain.model.LoanFactory
 import com.finance.domain.policy.WeeklyLoanExtensionPolicy
 import com.finance.domain.repository.CustomerRepository
-import com.finance.domain.repository.LoanDomainRepository
+import com.finance.domain.repository.LoanRepository
 import com.finance.util.CommonTestObject
 import org.joda.time.DateTime
 import org.joda.time.DateTimeUtils
@@ -21,7 +21,7 @@ class LoanApplicationServiceSpec extends Specification {
 
   CustomerRepository customerRepository = Mock()
 
-  LoanDomainRepository loanRepository = Mock()
+  LoanRepository loanRepository = Mock()
 
   LoanFactory loanFactory = new LoanFactory()
 
@@ -32,7 +32,7 @@ class LoanApplicationServiceSpec extends Specification {
   def setup() {
     loanExtensionPolicy.interestRate = 1.5
     loanFactory.weeklyLoanExtensionPolicy = loanExtensionPolicy
-    loanService = new LoanApplicationService(loanRepository, customerRepository, loanFactory)
+    loanService = new LoanApplicationService(loanRepository, customerRepository, loanFactory, loanExtensionPolicy)
     loanService.highRiskHourTo = 6
     loanService.maxLoanAmount = new BigDecimal(300.00)
     loanService.maxNumOfApplicationsFromIpPerDay = 3
@@ -150,7 +150,7 @@ class LoanApplicationServiceSpec extends Specification {
             loanRequest.getRepaymentDate(),
             "127.0.0.1")
     loan.status = Loan.LoanStatus.ACTIVE
-    loanRepository.load(1l) >> loan
+    loanRepository.findById(1l) >> loan
 
     when:
     def result = loanService.createLoanExtension("0000000001");
@@ -159,7 +159,7 @@ class LoanApplicationServiceSpec extends Specification {
     result.status == Loan.LoanStatus.EXTENDED
     result.loanExtensionList.size() == 1
     result.repaymentDate == new LocalDate(repaymentDate).plusWeeks(1).toDate();
-    result.totalAmount == 205.75
+    result.totalAmount == 205.74
   }
 
 
@@ -172,7 +172,7 @@ class LoanApplicationServiceSpec extends Specification {
 
   List<Loan> getLoanList() {
     def list = []
-    for (int i = 0; i < 10; i++) {
+    (1..10).each {
       list.add(new Loan(null, null, null, null, null))
     }
     return list

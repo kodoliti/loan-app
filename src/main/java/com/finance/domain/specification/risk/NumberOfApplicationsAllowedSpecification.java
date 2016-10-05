@@ -1,7 +1,7 @@
 package com.finance.domain.specification.risk;
 
 import com.finance.domain.model.Loan;
-import com.finance.domain.repository.LoanDomainRepository;
+import com.finance.domain.repository.LoanRepository;
 import com.finance.domain.specification.CompositeSpecification;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -13,10 +13,10 @@ public class NumberOfApplicationsAllowedSpecification extends CompositeSpecifica
 
     private int maxNumberOfApplications = 0;
 
-    private LoanDomainRepository loanDomainRepository;
+    private LoanRepository loanRepository;
 
-    public NumberOfApplicationsAllowedSpecification(LoanDomainRepository loanDomainRepository, int maxNumberOfApplications) {
-        this.loanDomainRepository = loanDomainRepository;
+    public NumberOfApplicationsAllowedSpecification(LoanRepository loanRepository, int maxNumberOfApplications) {
+        this.loanRepository = loanRepository;
         this.maxNumberOfApplications = maxNumberOfApplications;
     }
 
@@ -25,7 +25,7 @@ public class NumberOfApplicationsAllowedSpecification extends CompositeSpecifica
         LocalDateTime now = LocalDateTime.now();
         LocalDate localDate = new LocalDate();
 
-        List<Loan> loans = loanDomainRepository.findByIpAddressAndCreatedBetween(candidate.getIpAddress(), localDate.toDate(), now.toDate());
+        List<Loan> loans = loanRepository.findByIpAddressAndCreatedBetween(candidate.getIpAddress(), localDate.toDate(), now.toDate());
         return loans.size() < maxNumberOfApplications;
     }
 

@@ -12,10 +12,11 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,36 +41,40 @@ public class LoanController {
         this.loanMapper = loanMapper;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public LoanResponseDto getLoan(@RequestParam LoanRequestDto loanRequestDto, HttpServletRequest httpRequest) {
-        logger.info(loanRequestDto.toString());
+    public ResponseEntity<LoanResponseDto> createLoan(@RequestBody LoanRequestDto loanRequestDto, HttpServletRequest httpRequest) {
         String ipAddress = httpRequest.getRemoteAddr();
         try {
             Loan loan = loanApplicationService.createLoan(loanRequestDto, ipAddress);
-            return new LoanResponseDto(loan.getLoanReference(), "The loan application was accepted. Loan will be granted.");
+            LoanResponseDto loanResponseDto = new LoanResponseDto(loan.getLoanReference(), "The loan application was accepted. Loan will be granted.");
+            return new ResponseEntity(loanResponseDto, HttpStatus.CREATED);
         } catch (CreateLoanException e) {
-            return new LoanResponseDto(null, String.format("Error has occurred during loan's creation : %s", e.getMessage()));
+            String message = String.format("Error has occurred during loan's creation : %s", e.getMessage());
+            return new ResponseEntity(new LoanResponseDto(null, message), HttpStatus.BAD_REQUEST);
         }
     }
 
 
-    @RequestMapping(value = "/{loanReference}/extension", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/{loanReference}/extension", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public LoanResponseDto getLoanExtension(@PathVariable("loanReference") @Valid @NotBlank String loanReference) {
+    public ResponseEntity<LoanResponseDto> createLoanExtension(@PathVariable("loanReference") @Valid @NotBlank String loanReference) {
+        LoanResponseDto loanResponseDto;
         try {
             Loan loan = loanApplicationService.createLoanExtension(loanReference);
-            return new LoanResponseDto(loan.getLoanReference(), "The loan was extended correctly.", true);
+            loanResponseDto = new LoanResponseDto(loan.getLoanReference(), "The loan was extended correctly.", true);
+            return new ResponseEntity(loanResponseDto, HttpStatus.CREATED);
         } catch (CreateLoanExtensionException e) {
-            return new LoanResponseDto(loanReference, String.format("Error has occurred during loan's extension : %s", e.getMessage()), false);
+            loanResponseDto = new LoanResponseDto(loanReference, String.format("Error has occurred during loan's extension : %s", e.getMessage()), false);
+            return new ResponseEntity(loanResponseDto, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @RequestMapping(value = "/{customerId}/history", method = RequestMethod.GET)
+    @RequestMapping(value = "/customer/{customerId}/history", method = RequestMethod.GET)
     @ResponseBody
-    public List<LoanDto> getLoanHistory(@PathVariable("customerId") Long customerId) {
+    public ResponseEntity<List<LoanDto>> getLoanHistory(@PathVariable("customerId") Long customerId) {
         List<Loan> loanList = loanApplicationService.getLoanHistory(customerId);
-        return loanList.stream().map((loan) -> loanMapper.getLoanDto(loan)).collect(Collectors.toList());
+        return new ResponseEntity(loanList.stream().map((loan) -> loanMapper.getLoanDto(loan)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
 }

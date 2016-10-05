@@ -9,8 +9,9 @@ import com.finance.domain.model.Contact;
 import com.finance.domain.model.Customer;
 import com.finance.domain.model.Loan;
 import com.finance.domain.model.LoanFactory;
+import com.finance.domain.policy.LoanExtensionPolicy;
 import com.finance.domain.repository.CustomerRepository;
-import com.finance.domain.repository.LoanDomainRepository;
+import com.finance.domain.repository.LoanRepository;
 import com.finance.domain.specification.CompositeSpecification;
 import com.finance.domain.specification.MaxTotalAmountSpecification;
 import com.finance.domain.specification.Specification;
@@ -30,7 +31,7 @@ import java.util.List;
 @ApplicationService
 public class LoanApplicationService {
 
-    private LoanDomainRepository loanDomainRepository;
+    private LoanRepository loanRepository;
 
     private CustomerRepository customerRepository;
 
@@ -45,12 +46,18 @@ public class LoanApplicationService {
     @Value("${max.num.of.applications.from.ip.per.day}")
     private Integer maxNumOfApplicationsFromIpPerDay;
 
+    private LoanExtensionPolicy weeklyLoanExtensionPolicy;
+
 
     @Autowired
-    public LoanApplicationService(LoanDomainRepository loanDomainRepository, CustomerRepository customerRepository, LoanFactory loanFactory) {
-        this.loanDomainRepository = loanDomainRepository;
+    public LoanApplicationService(LoanRepository loanRepository,
+                                  CustomerRepository customerRepository,
+                                  LoanFactory loanFactory,
+                                  LoanExtensionPolicy weeklyLoanExtensionPolicy) {
+        this.loanRepository = loanRepository;
         this.customerRepository = customerRepository;
         this.loanFactory = loanFactory;
+        this.weeklyLoanExtensionPolicy = weeklyLoanExtensionPolicy;
     }
 
     public Loan createLoan(LoanRequestDto loanRequestDto, String ipAddress) throws CreateLoanException {
@@ -68,7 +75,7 @@ public class LoanApplicationService {
 
         loan.grant();
 
-        loanDomainRepository.save(loan);
+        loanRepository.save(loan);
 
         return loan;
     }
@@ -76,7 +83,8 @@ public class LoanApplicationService {
 
     public Loan createLoanExtension(String loanReference) throws CreateLoanExtensionException {
 
-        Loan loan = loanDomainRepository.load(getIdFromLoanReference(loanReference));
+        Loan loan = loanRepository.findById(getIdFromLoanReference(loanReference));
+        loan.setWeeklyLoanExtensionPolicy(weeklyLoanExtensionPolicy);
 
         if (loan == null) {
             throw new CreateLoanExtensionException("There is no loan for given reference");
@@ -84,7 +92,7 @@ public class LoanApplicationService {
 
         loan.extend();
 
-        loanDomainRepository.save(loan);
+        loanRepository.save(loan);
 
         return loan;
     }
@@ -99,7 +107,7 @@ public class LoanApplicationService {
 
 
     public List<Loan> getLoanHistory(Long customerId) {
-        return loanDomainRepository.findByCustomerIdOrderByCreatedDesc(customerId);
+        return loanRepository.findByCustomerIdOrderByCreatedDesc(customerId);
     }
 
 
@@ -109,7 +117,7 @@ public class LoanApplicationService {
                 new MaxTotalAmountSpecification(maxLoanAmount),
                 new TimeOfReceiptApplicationSpecification(new LocalTime(highRiskHourTo, 0))
                         .or(new TotalAmountDependFromTimeSpecification(maxLoanAmount)),
-                new NumberOfApplicationsAllowedSpecification(loanDomainRepository, maxNumOfApplicationsFromIpPerDay));
+                new NumberOfApplicationsAllowedSpecification(loanRepository, maxNumOfApplicationsFromIpPerDay));
 
     }
 
