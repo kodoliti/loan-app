@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 
 @RestController
-@RequestMapping(value = "/loan")
+@RequestMapping(value = "/loan", produces = "application/json")
 public class LoanController {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
@@ -41,7 +41,7 @@ public class LoanController {
         this.loanMapper = loanMapper;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<LoanResponseDto> createLoan(@RequestBody LoanRequestDto loanRequestDto, HttpServletRequest httpRequest) {
         String ipAddress = httpRequest.getRemoteAddr();
@@ -56,7 +56,7 @@ public class LoanController {
     }
 
 
-    @RequestMapping(value = "/{loanReference}/extension", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/{loanReference}/extension", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<LoanResponseDto> createLoanExtension(@PathVariable("loanReference") @Valid @NotBlank String loanReference) {
         LoanResponseDto loanResponseDto;
